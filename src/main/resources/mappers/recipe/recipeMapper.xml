@@ -61,10 +61,10 @@
 		
 		<selectKey keyProperty="comment_no" resultType="java.lang.Long"
 			order="BEFORE">
-			SELECT NVL(MAX(COMMENT_NO), 0) + 1 FROM recipe_comment
+			SELECT NVL(MAX(COMMENT_NO), 0) + 1 FROM RECIPE_COMMENT
 		</selectKey>
 		
-		INSERT INTO recipe_comment (COMMENT_NO, RE_NO, ID, COMMENT_CONTENT, RATING,
+		INSERT INTO RECIPE_COMMENT (COMMENT_NO, RE_NO, ID, COMMENT_CONTENT, RATING,
 		WRITTEN_TIME,PROFILE)
 		VALUES (#{comment_no}, #{re_no},
 		#{id}, #{comment_content}, #{rating},
@@ -137,7 +137,7 @@
 	
 	<!-- 댓글들 -->
 	<update id="commentUpdata" parameterType="com.care.sekki.Recipe.CommentDTO">
-    UPDATE recipe_comment SET COMMENT_CONTENT=#{comment_content} WHERE re_no=#{re_no} AND COMMENT_NO=#{comment_no}
+    UPDATE RECIPE_COMMENT SET COMMENT_CONTENT=#{comment_content} WHERE re_no=#{re_no} AND COMMENT_NO=#{comment_no}
 </update>
 	<!-- 댓글들 -->
 	<!-- 업데이트 -->
@@ -156,11 +156,11 @@
 	</delete>
 	
 	<delete id="reciCommentDel">
-	DELETE FROM recipe_comment WHERE RE_NO=#{re_no}
+	DELETE FROM RECIPE_COMMENT WHERE RE_NO=#{re_no}
 	</delete>
 	
 	<delete id="CommentDel">
-	DELETE FROM recipe_comment WHERE RE_NO=#{re_no} AND comment_no=#{comment_no}
+	DELETE FROM RECIPE_COMMENT WHERE RE_NO=#{re_no} AND comment_no=#{comment_no}
 	</delete>
 
 </mapper>

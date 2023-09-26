@@ -48,4 +48,6 @@ public interface RecipeMapper {
 
 	void CommentDel(CommentDTO comDto);
 
+	ArrayList<RecipeBoardDTO> recipeBoardByCategory(int begin, int end, String search, String category);
+
 }

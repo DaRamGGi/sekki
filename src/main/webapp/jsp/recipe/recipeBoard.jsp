@@ -8,11 +8,11 @@
 
 <div align="center">
 	<ul class="cate">
-		<li><a href="recipeBoard.jsp?category=kor"><span>한식</span></a></li>
-		<li><a href="recipeBoard.jsp?category=jap"><span>일식</span></a></li>
-		<li><a href="recipeBoard.jsp?category=chi"><span>중식</span></a></li>
-		<li><a href="recipeBoard.jsp?category=skeki"><span>양식</span></a></li>
-	</ul>
+        <li><a href="#" onclick="selectCategory('kor');"><span>한식</span></a></li>
+        <li><a href="#" onclick="selectCategory('jap');"><span>일식</span></a></li>
+        <li><a href="#" onclick="selectCategory('chi');"><span>중식</span></a></li>
+        <li><a href="#" onclick="selectCategory('skeki');"><span>양식</span></a></li>
+    </ul>
 </div>
 
 <div id="width1200">

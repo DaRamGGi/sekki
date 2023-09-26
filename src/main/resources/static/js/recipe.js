@@ -1,5 +1,22 @@
 
 // HTML 코드 삽입 시점인 DOMContentLoaded에서 스크립트를 실행
+
+ function selectCategory(category) {
+        // 선택한 카테고리 값을 서버로 전송
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "recipeProc");
+
+        var input = document.createElement("input");
+        input.setAttribute("type", "hidden");
+        input.setAttribute("name", "category");
+        input.setAttribute("value", category);
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
 document.addEventListener('DOMContentLoaded', function() {
 	// 메인 요리 이미지 관련 코드
 	const mainPhotoHolder = document.getElementById('mainPhotoHolder');
