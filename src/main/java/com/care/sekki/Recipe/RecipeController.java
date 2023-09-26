@@ -135,15 +135,18 @@ public class RecipeController {
 			 model.addAttribute("commentMessage", "아직 작성한 댓글이 없습니다.");
 		    
 		}else {
-		model.addAttribute("reciment", reciment);
-		
+			
+			
+
 		for (CommentDTO comment : reciment) {
 		    float rating = comment.getRating(); // CommentDTO 객체의 rating 값 가져오기
 
 		    int maxRating = 5;
 		    int intPart = (int) Math.floor(rating);
 		    int fractionalPart = Math.round((rating - intPart) * 2);
-
+		    
+		    System.out.println("com_no : " + comment.getcomment_no());
+		    
 		    String fullStarPath = "image/star_green.png";
 		    String halfStarPath = "image/star_green_half.png";
 		    String emptyStarPath = "image/star_no.png";
@@ -161,9 +164,11 @@ public class RecipeController {
 
 		    comment.setStarTags(starTags); // CommentDTO 객체에 starTags 설정
 		}
+		
+		model.addAttribute("reciment", reciment);
 		}
 
-		model.addAttribute("reciment", reciment);
+		
 
 
 
@@ -181,6 +186,7 @@ public class RecipeController {
 
 		return "recipe/recipeBoardContent";
 	}
+	
 	@PostMapping("commentProc")
 	public String commentProc(HttpSession session, CommentDTO commentDto, Model model) {
 		recipeService.commentProc(commentDto);

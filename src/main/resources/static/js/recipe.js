@@ -146,14 +146,19 @@ function deleteRecipe(re_no) {
 //드롭박스
 $(document).ready(function() {
     $(".dropdown-icon").click(function() {
+		
         $(this).next(".dropdown-menu").toggle();
+    });
+    $(".edit-button").click(function() {
+        $(this).closest(".dropdown-menu").hide();
     });
 });
 
 //댓글 수정
 function editComment(commentId, currentContent, reno, comNo) {
-    var commentElement = document.getElementById(`comment2-${commentId}`);
+    var commentElement = document.getElementById(`comment2-${comNo}`);
     var commentText = commentElement.textContent.trim();
+     console.log(commentText);
 
     var editInput = document.createElement('textarea');
     editInput.value = commentText;

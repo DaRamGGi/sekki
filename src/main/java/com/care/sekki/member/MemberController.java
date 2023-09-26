@@ -61,6 +61,11 @@ public class MemberController {
 		return "member/mypage";
 	}
   
+  @RequestMapping("memberInfo")
+  public String memberInfo() {
+	  return "member/memberInfo";
+  }
+  
   /* 로그인 */
 	@GetMapping("login")
 	public String login() {

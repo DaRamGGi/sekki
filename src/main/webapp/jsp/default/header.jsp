@@ -32,7 +32,7 @@
 
     <%-- "profilePictureUrl" 값이 null이 아니면 이미지 표시 --%>
     <% if (profilePictureUrl != null) { %>
-        <img src="<%= profilePictureUrl %>" class="profile">
+        <a href="${context }login"><img src="<%= profilePictureUrl %>" class="profile"></a>
     <% }%></li>
 
 	<c:if test="${empty sessionScope.id}">

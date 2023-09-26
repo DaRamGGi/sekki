@@ -64,165 +64,193 @@ CREATE TABLE sekki_center_board (
 	</resultMap>
 	
 	<!-- 공통 -->
-	<select id="count">
-		<choose>
-	  		<when test="search == ''">
-	  			SELECT count(num) FROM sekki_center_board WHERE category=#{category}
-	  		</when>
-	  		<otherwise>
-	  			SELECT count(num) FROM sekki_center_board WHERE title like '%'||#{search}||'%' AND category=#{category}
-	  		</otherwise>
-		</choose>
-	</select>
-	
-	<update id="incHit">
-		UPDATE sekki_center_board SET hits=hits+1 WHERE num=#{num}
-	</update>
-	
-	<update id="incReplys">
-		UPDATE sekki_center_board SET replys=replys+1 WHERE num=#{num}
-	</update>
-	
-	<update id="decReplys">
-		UPDATE sekki_center_board SET replys=replys-1 WHERE num=#{num}
-	</update>
-	
-	<select id="centerContent" resultMap="centerDTO">
-		SELECT * FROM sekki_center_board WHERE num=#{num}
-	</select>
-	
-	<select id="replys" resultMap="centerReplyDTO">
-		SELECT rownum as rn, AAA.* FROM 
-		(SELECT * FROM center_reply WHERE center_num=#{center_num} AND category=#{category} ORDER BY reply_num DESC)AAA
-	</select>
-	
-	<select id="fileDownload">
-		SELECT files FROM sekki_center_board WHERE num=#{num}
-	</select>
-	
-	<delete id="deleteCenterProc">	
-		DELETE FROM sekki_center_board WHERE num=#{num}
-	</delete>
-	
-	<delete id="deleteReply">
-		DELETE FROM center_reply WHERE reply_num=#{replyNum}
-	</delete>
-	
-	<!-- 공지사항 등록 -->
-	<insert id="writeAnnouncementProc">
-		<selectKey order="BEFORE" keyProperty="num" resultType="int">
-			SELECT nvl(max(num),0) + 1 FROM sekki_center_board
-		</selectKey>
-		INSERT INTO sekki_center_board (num, category, title, content, writer, write_time, write_date, files, hits, likes, replys )
-		VALUES(#{num}, #{category}, #{title}, #{content}, #{writer}, #{writeTime}, #{writeDate}, #{files}, 0, 0, 0 )
-	</insert>
-	
-	<!-- 공지사항 목록 -->
-	<select id="allAnnouncement" resultMap="centerDTO">
-		SELECT BBB.* FROM 
-		(SELECT rownum as rn, AAA.* FROM 
-		(SELECT num, title, writer, write_date, hits FROM sekki_center_board WHERE category=#{category} ORDER BY num DESC)AAA)BBB
-		WHERE BBB.rn BETWEEN #{begin} AND #{end}
-	</select>
-	
-	<select id="partAnnouncement" resultMap="centerDTO">
-        SELECT BBB.* FROM 
-        (SELECT rownum as rn, AAA.* FROM 
-        (SELECT num, title, writer, write_date, hits FROM sekki_center_board WHERE category=#{category} AND title LIKE '%'||#{search}||'%' ORDER BY num DESC) AAA
-		) BBB WHERE BBB.rn BETWEEN #{begin} AND #{end}
-	</select> 
-	
-	<!-- 공지사항 내역 -->
-	<update id="modifyAnnouncementProc">
-		UPDATE sekki_center_board SET title=#{title}, content=#{content}, files=#{files}, 
-		write_date=#{writeDate}, write_time=#{writeTime}, hits=0, likes=#{likes} WHERE num=#{num}
-	</update>
+	<!-- count 쿼리 -->
+<select id="count">
+    <choose>
+        <when test="search == ''">
+            SELECT count(num) FROM sekki_center_board WHERE category=#{category}
+        </when>
+        <otherwise>
+            SELECT count(num) FROM sekki_center_board WHERE title like CONCAT('%', #{search}, '%') AND category=#{category}
+        </otherwise>
+    </choose>
+</select>
 
-	<!-- 좋아요 기능 -->
-	<update id="setHeart">
-		UPDATE sekki_center_board SET likes=#{likes} WHERE num=#{num}
-	</update>
-	
-	<select id="likespersonCheck">
-		SELECT count(like_id) FROM center_likes WHERE center_num=#{center_num} 
-		AND user_id=#{user_id} AND category=#{category}
-	</select>
-	
-	<insert id="likesPersonSave">
-		INSERT INTO center_likes (center_num, user_id, category) VALUES(#{center_num}, 
-		#{user_id}, #{category})
-	</insert>
-	
-	<delete id="likesPersonDelete">
-		DELETE FROM center_likes WHERE center_num=#{center_num} 
-		AND user_id=#{user_id} AND category=#{category}
-	</delete>
+<!-- incHit 쿼리 -->
+<update id="incHit">
+    UPDATE sekki_center_board SET hits=hits+1 WHERE num=#{num}
+</update>
 
-	<select id="myReplyOnly" resultMap="centerReplyDTO">
-		SELECT rownum as rn, AAA.* FROM 
-		(SELECT * FROM center_reply WHERE center_num=#{center_num} AND category=#{category} 
-		AND writer=#{writer} ORDER BY reply_num DESC)AAA
-	</select>
-	
-	<insert id="writeAnnouncementReply">
-		INSERT INTO center_reply (center_num, category, reply , writer , write_date)
-		VALUES(#{centerNum}, #{category}, #{reply}, #{writer}, #{writeDate})
-	</insert>
-	
-	<select id="announcementReplyModifyClick">
-		SELECT * FROM center_reply WHERE reply_num=#{replyNum}
-	</select>
+<!-- incReplys 쿼리 -->
+<update id="incReplys">
+    UPDATE sekki_center_board SET replys=replys+1 WHERE num=#{num}
+</update>
 
-	<update id="announcementReplyModify">
-		UPDATE center_reply SET center_num=#{centerNum}, reply=#{reply}, write_date=#{writeDate} WHERE reply_num=#{replyNum}
-	</update>
-	
-	<!-- 문의하기*************************************************************************************************************** -->
-	<select id="allInquiry" resultMap="centerDTO">
-		SELECT BBB.* FROM 
-		(SELECT rownum as rn, AAA.* FROM 
-		(SELECT num, title, writer, write_date, hits, secret, replys FROM sekki_center_board WHERE category=#{category} ORDER BY num DESC)AAA)BBB
-		WHERE BBB.rn BETWEEN #{begin} AND #{end}
-	</select>
-	
-	<select id="partInquiry" resultMap="centerDTO">
-        SELECT BBB.* FROM 
-        (SELECT rownum as rn, AAA.* FROM 
-        (SELECT num, title, writer, write_date, hits, secret, replys FROM sekki_center_board WHERE category=#{category} AND title LIKE '%'||#{search}||'%' ORDER BY num DESC) AAA
-		) BBB WHERE BBB.rn BETWEEN #{begin} AND #{end}
-	</select> 
-	
-	<insert id="writeInquiryProc">
-		<selectKey order="BEFORE" keyProperty="num" resultType="int">
-			SELECT nvl(max(num),0) + 1 FROM sekki_center_board
-		</selectKey>
-		INSERT INTO sekki_center_board (num, category, title, content, writer, write_time, files, hits, likes, write_date, secret, secret_pw, replys)
-		VALUES(#{num}, #{category}, #{title}, #{content}, #{writer}, #{writeTime}, #{files}, 0, 0, #{writeDate}, #{secret}, #{secretPw}, 0)
-	</insert>
-	
-	<select id="inquirySecretCheck" resultMap="centerDTO">
-	  SELECT * FROM sekki_center_board WHERE num=#{num} AND category=#{category}
-	</select>
-	
-	<insert id="adminReplyProc">
-		INSERT INTO center_reply (center_num, category, reply , writer , write_date)
-		VALUES(#{centerNum}, #{category}, #{reply}, #{writer}, #{writeDate})
-	</insert>
-	
-	<select id="modifyAble">
-		SELECT count(reply_num) FROM center_reply WHERE center_num=#{centerNum}
-	</select>
-	
-	<update id="modifyinquiryProc">
-		UPDATE sekki_center_board SET title=#{title}, content=#{content}, files=#{files}, 
-		write_date=#{writeDate}, write_time=#{writeTime}, hits=0, secret=#{secret}, secret_pw=#{secretPw } WHERE num=#{num}
-	</update>
-	
-	<select id="replyContent">
-		SELECT * FROM center_reply WHERE reply_num=#{replyNum}
-	</select>
-	
-	<update id="modifyAdminReply">
-		UPDATE center_reply SET center_num=#{centerNum}, reply=#{reply}, write_date=#{writeDate} WHERE reply_num=#{replyNum}
-	</update>
+<!-- decReplys 쿼리 -->
+<update id="decReplys">
+    UPDATE sekki_center_board SET replys=replys-1 WHERE num=#{num}
+</update>
+
+<!-- centerContent 쿼리 -->
+<select id="centerContent" resultMap="centerDTO">
+    SELECT * FROM sekki_center_board WHERE num=#{num}
+</select>
+
+<!-- replys 쿼리 -->
+<select id="replys" resultMap="centerReplyDTO">
+    SELECT ROW_NUMBER() OVER (ORDER BY reply_num DESC) as rn, AAA.*
+    FROM (SELECT * FROM center_reply WHERE center_num=#{center_num} AND category=#{category}) AAA
+</select>
+
+<!-- fileDownload 쿼리 -->
+<select id="fileDownload">
+    SELECT files FROM sekki_center_board WHERE num=#{num}
+</select>
+
+<!-- deleteCenterProc 쿼리 -->
+<delete id="deleteCenterProc">    
+    DELETE FROM sekki_center_board WHERE num=#{num}
+</delete>
+
+<!-- deleteReply 쿼리 -->
+<delete id="deleteReply">
+    DELETE FROM center_reply WHERE reply_num=#{replyNum}
+</delete>
+
+<!-- writeAnnouncementProc 쿼리 -->
+<insert id="writeAnnouncementProc">
+    <selectKey order="BEFORE" keyProperty="num" resultType="int">
+        SELECT COALESCE(MAX(num), 0) + 1 FROM sekki_center_board
+    </selectKey>
+    INSERT INTO sekki_center_board (num, category, title, content, writer, write_time, write_date, files, hits, likes, replys)
+    VALUES(#{num}, #{category}, #{title}, #{content}, #{writer}, #{writeTime}, #{writeDate}, #{files}, 0, 0, 0)
+</insert>
+
+<!-- allAnnouncement 쿼리 -->
+<select id="allAnnouncement" resultMap="centerDTO">
+    SELECT BBB.* FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY num DESC) as rn, AAA.*
+        FROM (SELECT num, title, writer, write_date, hits FROM sekki_center_board WHERE category=#{category}) AAA
+    ) BBB
+    WHERE BBB.rn BETWEEN #{begin} AND #{end}
+</select>
+
+<!-- partAnnouncement 쿼리 -->
+<select id="partAnnouncement" resultMap="centerDTO">
+    SELECT BBB.* FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY num DESC) as rn, AAA.*
+        FROM (SELECT num, title, writer, write_date, hits FROM sekki_center_board WHERE category=#{category} AND title LIKE CONCAT('%', #{search}, '%')) AAA
+    ) BBB
+    WHERE BBB.rn BETWEEN #{begin} AND #{end}
+</select>
+
+<!-- modifyAnnouncementProc 쿼리 -->
+<update id="modifyAnnouncementProc">
+    UPDATE sekki_center_board
+    SET title=#{title}, content=#{content}, files=#{files}, write_date=#{writeDate}, write_time=#{writeTime}, hits=0, likes=#{likes}
+    WHERE num=#{num}
+</update>
+
+<!-- setHeart 쿼리 -->
+<update id="setHeart">
+    UPDATE sekki_center_board SET likes=#{likes} WHERE num=#{num}
+</update>
+
+<!-- likespersonCheck 쿼리 -->
+<select id="likespersonCheck">
+    SELECT COUNT(like_id) FROM center_likes WHERE center_num=#{center_num} AND user_id=#{user_id} AND category=#{category}
+</select>
+
+<!-- likesPersonSave 쿼리 -->
+<insert id="likesPersonSave">
+    INSERT INTO center_likes (center_num, user_id, category) VALUES(#{center_num}, #{user_id}, #{category})
+</insert>
+
+<!-- likesPersonDelete 쿼리 -->
+<delete id="likesPersonDelete">
+    DELETE FROM center_likes WHERE center_num=#{center_num} AND user_id=#{user_id} AND category=#{category}
+</delete>
+
+<!-- myReplyOnly 쿼리 -->
+<select id="myReplyOnly" resultMap="centerReplyDTO">
+    SELECT ROW_NUMBER() OVER (ORDER BY reply_num DESC) as rn, AAA.*
+    FROM (SELECT * FROM center_reply WHERE center_num=#{center_num} AND category=#{category} AND writer=#{writer}) AAA
+</select>
+
+<!-- writeAnnouncementReply 쿼리 -->
+<insert id="writeAnnouncementReply">
+    INSERT INTO center_reply (center_num, category, reply, writer, write_date)
+    VALUES(#{centerNum}, #{category}, #{reply}, #{writer}, #{writeDate})
+</insert>
+
+<!-- announcementReplyModifyClick 쿼리 -->
+<select id="announcementReplyModifyClick">
+    SELECT * FROM center_reply WHERE reply_num=#{replyNum}
+</select>
+
+<!-- announcementReplyModify 쿼리 -->
+<update id="announcementReplyModify">
+    UPDATE center_reply SET center_num=#{centerNum}, reply=#{reply}, write_date=#{writeDate} WHERE reply_num=#{replyNum}
+</update>
+
+<!-- allInquiry 쿼리 -->
+<select id="allInquiry" resultMap="centerDTO">
+    SELECT BBB.* FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY num DESC) as rn, AAA.*
+        FROM (SELECT num, title, writer, write_date, hits, secret, replys FROM sekki_center_board WHERE category=#{category}) AAA
+    ) BBB
+    WHERE BBB.rn BETWEEN #{begin} AND #{end}
+</select>
+
+<!-- partInquiry 쿼리 -->
+<select id="partInquiry" resultMap="centerDTO">
+    SELECT BBB.* FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY num DESC) as rn, AAA.*
+        FROM (SELECT num, title, writer, write_date, hits, secret, replys FROM sekki_center_board WHERE category=#{category} AND title LIKE CONCAT('%', #{search}, '%')) AAA
+    ) BBB
+    WHERE BBB.rn BETWEEN #{begin} AND #{end}
+</select>
+
+<!-- writeInquiryProc 쿼리 -->
+<insert id="writeInquiryProc">
+    <selectKey order="BEFORE" keyProperty="num" resultType="int">
+        SELECT COALESCE(MAX(num), 0) + 1 FROM sekki_center_board
+    </selectKey>
+    INSERT INTO sekki_center_board (num, category, title, content, writer, write_time, files, hits, likes, write_date, secret, secret_pw, replys)
+    VALUES(#{num}, #{category}, #{title}, #{content}, #{writer}, #{writeTime}, #{files}, 0, 0, #{writeDate}, #{secret}, #{secretPw}, 0)
+</insert>
+
+<!-- inquirySecretCheck 쿼리 -->
+<select id="inquirySecretCheck" resultMap="centerDTO">
+    SELECT * FROM sekki_center_board WHERE num=#{num} AND category=#{category}
+</select>
+
+<!-- adminReplyProc 쿼리 -->
+<insert id="adminReplyProc">
+    INSERT INTO center_reply (center_num, category, reply, writer, write_date)
+    VALUES(#{centerNum}, #{category}, #{reply}, #{writer}, #{writeDate})
+</insert>
+
+<!-- modifyAble 쿼리 -->
+<select id="modifyAble">
+    SELECT COUNT(reply_num) FROM center_reply WHERE center_num=#{centerNum}
+</select>
+
+<!-- modifyinquiryProc 쿼리 -->
+<update id="modifyinquiryProc">
+    UPDATE sekki_center_board
+    SET title=#{title}, content=#{content}, files=#{files}, write_date=#{writeDate}, write_time=#{writeTime}, hits=0, secret=#{secret}, secret_pw=#{secretPw}
+    WHERE num=#{num}
+</update>
+
+<!-- replyContent 쿼리 -->
+<select id="replyContent">
+    SELECT * FROM center_reply WHERE reply_num=#{replyNum}
+</select>
+
+<!-- modifyAdminReply 쿼리 -->
+<update id="modifyAdminReply">
+    UPDATE center_reply SET center_num=#{centerNum}, reply=#{reply}, write_date=#{writeDate} WHERE reply_num=#{replyNum}
+</update>
+
  </mapper>

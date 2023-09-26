@@ -46,7 +46,7 @@
 		<%--메인 재료 --%>
 		<div class="cont_box pd_l_60 content_borad">
 			<div id="materialss">
-				<h3>재료</h3>
+				<h3>재료 </h3>
 				<ul class="mate_con">
 					<c:forEach var="reciMa" items="${reciMa}">
 						<li class="mate_con_list"><span class="mate_con_name">${reciMa.materialname}</span><span
@@ -102,21 +102,19 @@
 						    <i class="fas fa-ellipsis-h dropdown-icon"></i>
 						    <ul class="dropdown-menu">
 						      <li>
-						                 <button onclick="editComment('${reciment.id}', '${reciment.comment_content}', '${recipeCon.re_no}', '${reciment.comment_no}')">
-수정</button>
-
-						            </li>
-						            <li>
-						                <button type="button" onclick="deleteComment(${reciment.comment_no}, ${recipeCon.re_no})">삭제</button>
-						            </li>
+						        <button class="edit-button" onclick="editComment('${reciment.id}', '${reciment.comment_content}', '${recipeCon.re_no}', '${reciment.comment_no}')">수정</button>
+						      </li>
 						            
-						        
+						      <li>
+						        <button type="button" onclick="deleteComment(${reciment.comment_no}, ${recipeCon.re_no})">삭제</button>
+						      </li>
 						    </ul>
+						    
 						</div>
 						</c:if>
 						</div>
 						<div class="coment_content">
-							<p id="comment2-${reciment.id}">${reciment.comment_content}</p>
+							<p id="comment2-${reciment.comment_no}">${reciment.comment_content}</p>
 						</div>
 					</div>
 				</div>
@@ -172,11 +170,12 @@
 				</div>
 			</form>
 		</div>
-		
+		 
 		<c:if test="${sessionScope.id eq recipeCon.id}">
 		    <div class="announcementBtnDiv">
-		        <button type="button" onclick="deleteRecipe(${recipeCon.re_no})" class="reci_up_da" >삭제</button>
-		        <button class="reci_up_da" onclick="location.href='recipeBoardUpdata?re_no=${recipeCon.re_no }'">수정</button>
+		        <button type="button" onclick="deleteRecipe(${recipeCon.re_no})" class="reci_up_da">삭제</button>
+				<button class="reci_up_da" onclick="location.href='recipeBoardUpdata?re_no=${recipeCon.re_no}'">수정</button>
+
 		    </div>
 		</c:if>
 
