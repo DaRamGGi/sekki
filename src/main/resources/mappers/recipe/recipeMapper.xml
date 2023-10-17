@@ -8,13 +8,43 @@
 	<select id="count">
 		<choose>
 			<when test="search != null">
-				SELECT count(re_no) FROM RECIPE_BOARD WHERE content like '%'||#{search}||'%'
+				SELECT count(re_no) FROM RECIPE_BOARD WHERE title like '%'||#{search}||'%'
 			</when>
 			<otherwise>
 				SELECT count(re_no) FROM RECIPE_BOARD
 			</otherwise>
 		</choose>
 	</select>
+	
+	<select id="countMainSearch" parameterType="com.care.sekki.Recipe.RecipeBoardDTO">
+    SELECT COUNT(RECIPE_BOARD.RE_NO)
+    FROM RECIPE_BOARD
+    WHERE RE_NO IN (
+        SELECT DISTINCT RECIPE_MATERIAL.RE_NO
+        FROM RECIPE_MATERIAL
+        WHERE RECIPE_MATERIAL.MATERIALNAME LIKE CONCAT('%', #{mate_one}, '%')
+          AND RECIPE_MATERIAL.MATERIALNAME LIKE CONCAT('%', #{mate_two}, '%')
+          AND RECIPE_MATERIAL.MATERIALNAME LIKE CONCAT('%', #{mate_three}, '%')
+    )
+</select>
+	
+	
+	<select id="MainSearch" parameterType="com.care.sekki.Recipe.RecipeBoardDTO">
+    SELECT * FROM (
+        SELECT *, ROW_NUMBER() OVER (ORDER BY re_no DESC) AS rn
+        FROM RECIPE_BOARD
+        WHERE RE_NO IN (
+            SELECT DISTINCT RECIPE_MATERIAL.RE_NO
+            FROM RECIPE_MATERIAL
+             WHERE RECIPE_MATERIAL.MATERIALNAME LIKE CONCAT('%', #{mate_one}, '%')
+              AND RECIPE_MATERIAL.MATERIALNAME LIKE CONCAT('%', #{mate_two}, '%')
+              AND RECIPE_MATERIAL.MATERIALNAME LIKE CONCAT('%', #{mate_three}, '%')
+        )
+    ) AS BBB
+    WHERE BBB.rn BETWEEN #{begin} AND #{end}
+</select>
+	
+	
 
 	<select id="recipeBoard" parameterType="com.care.sekki.Recipe.RecipeBoardDTO">
     <choose>
@@ -22,7 +52,27 @@
             SELECT * FROM (
                 SELECT *, ROW_NUMBER() OVER (ORDER BY re_no DESC) AS rn
                 FROM RECIPE_BOARD
-                WHERE content LIKE CONCAT('%', #{search}, '%')
+                WHERE title LIKE CONCAT('%', #{search}, '%') and category LIKE CONCAT('%', #{category}, '%')
+            ) AS BBB
+            WHERE BBB.rn BETWEEN #{begin} AND #{end}
+        </when>
+        <otherwise>
+            SELECT * FROM (
+                SELECT *, ROW_NUMBER() OVER (ORDER BY re_no DESC) AS rn
+                FROM RECIPE_BOARD
+            ) AS BBB
+            WHERE BBB.rn BETWEEN #{begin} AND #{end}
+        </otherwise>
+    </choose>
+</select>
+
+<select id="recipeCate" parameterType="com.care.sekki.Recipe.RecipeBoardDTO">
+    <choose>
+        <when test="cate != null">
+            SELECT * FROM (
+                SELECT *, ROW_NUMBER() OVER (ORDER BY re_no DESC) AS rn
+                FROM RECIPE_BOARD
+                WHERE category LIKE CONCAT('%', #{search}, '%')
             ) AS BBB
             WHERE BBB.rn BETWEEN #{begin} AND #{end}
         </when>

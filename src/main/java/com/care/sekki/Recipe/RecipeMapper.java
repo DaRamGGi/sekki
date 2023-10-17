@@ -11,7 +11,7 @@ import com.care.sekki.board.BoardDTO;
 @Mapper
 public interface RecipeMapper {
 	ArrayList<RecipeBoardDTO> recipeBoard(@Param("begin")int begin, @Param("end")int end, 
-			@Param("search")String search);
+			@Param("search")String search, @Param("category")String category);
 
 	int count(@Param("search")String search);
 	void insertRecipe(RecipeBoardDTO ricipeDto);
@@ -49,5 +49,11 @@ public interface RecipeMapper {
 	void CommentDel(CommentDTO comDto);
 
 	ArrayList<RecipeBoardDTO> recipeBoardByCategory(int begin, int end, String search, String category);
+
+	int countByCategory(String search, String category);
+
+	ArrayList<RecipeBoardDTO> MainSearch(int begin, int end, String mate_one, String mate_two, String mate_three);
+
+	int countMainSearch(String mate_one, String mate_two, String mate_three);
 
 }

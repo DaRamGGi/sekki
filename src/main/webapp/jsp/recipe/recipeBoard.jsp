@@ -7,13 +7,14 @@
 <link href="css/recipes.css" rel="stylesheet" />
 
 <div align="center">
-	<ul class="cate">
-        <li><a href="#" onclick="selectCategory('kor');"><span>한식</span></a></li>
-        <li><a href="#" onclick="selectCategory('jap');"><span>일식</span></a></li>
-        <li><a href="#" onclick="selectCategory('chi');"><span>중식</span></a></li>
-        <li><a href="#" onclick="selectCategory('skeki');"><span>양식</span></a></li>
+    <ul class="cate">
+        <li><a href="recipeBoard?category=kor"><span>한식</span></a></li>
+        <li><a href="recipeBoard?category=jap"><span>일식</span></a></li>
+        <li><a href="recipeBoard?category=chi"><span>중식</span></a></li>
+        <li><a href="recipeBoard?category=skeki"><span>양식</span></a></li>
     </ul>
 </div>
+
 
 <div id="width1200">
 
@@ -23,6 +24,7 @@
 			<img src="${recipe.mainphoto}">
 				<div class="content_2">
 					<p class="reci_title">${recipe.title}</p>
+					<p class="reci_cate">${recipe.category}</p>
 					<p class="reci_user">${recipe.id}</p>
 					<p class="reci_time">${recipe.written_time}</p>
 				</div></li>
@@ -31,10 +33,16 @@
 
 
 	<ul>
-		<li>
-		<a href="${context }recipeBoardWrite"> 
+		<li class="search_recipe">
+		<form action="recipeBoard" method="post" class="search_form">
+		<input type="text" name="search" placeholder="" class="search_text">
+		<input type="submit" value="검색" class="search_btn" >
+		</form>
+		<a href="${context }recipeBoardWrite" class="write_cs"> 
 		<span>글 작성하기</span>
-		</a></li>
+		</a>
+		
+		</li>
 	</ul>
 	
 	<div class="pages"> ${result } </div>

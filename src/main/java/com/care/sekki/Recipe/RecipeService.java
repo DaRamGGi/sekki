@@ -34,10 +34,21 @@ public class RecipeService {
 	@Autowired private HttpSession session;
 	@Autowired private S3UploadService s3UploadService;
 //---------------------------레시피 게시판------------------------
-	public void recipeBoard(String cp, String search, Model model) {
+	public void recipeBoard(HttpServletRequest request, String cp, String search, Model model, String category) {
+		
+		category = request.getParameter("category");
+		
+		System.out.println("search up  :  "  +  search);
 		if (search == null) {
 			search = "";
 		}
+		
+		if (category == null) {
+			category = "";
+		}
+			
+		System.out.println("search up  :  "  +  search);
+		
 		int currentPage = 1;
 		try{
 			currentPage = Integer.parseInt(cp);
@@ -48,10 +59,24 @@ public class RecipeService {
 		int pageBlock = 6; // 한 페이지에 보일 데이터의 수 
 		int end = pageBlock * currentPage; // 테이블에서 가져올 마지막 행번호
 		int begin = end - pageBlock + 1; // 테이블에서 가져올 시작 행번호
-
-		ArrayList<RecipeBoardDTO> recipes = recipemapper.recipeBoard(begin, end, search);
+		
+		ArrayList<RecipeBoardDTO> recipes = recipemapper.recipeBoard(begin, end, search, category);
+		for (RecipeBoardDTO recipe : recipes) {
+		    String categorys = recipe.getCategory();
+		    if ("kor".equals(categorys)) {
+		        recipe.setCategory("한식");
+		    } else if ("jap".equals(categorys)) {
+		        recipe.setCategory("일식");
+		    } else if ("chi".equals(categorys)) {
+		        recipe.setCategory("중식");
+		    }else if ("skeki".equals(categorys)) {
+		        recipe.setCategory("일식");
+		    }
+		}
 		int totalCount = recipemapper.count(search);
+		System.out.println("search  : " + search );
 		String url = "recipeBoard?&search="+search+"&currentPage=";
+		System.out.println("search  : " + search );
 		String result = PageService.printPage(url, currentPage, totalCount, pageBlock);
 
 		model.addAttribute("recipes", recipes);
@@ -61,11 +86,59 @@ public class RecipeService {
 			System.out.println(to.getRe_no());
 		System.out.println(to.getMainphoto());
 		
+		System.out.println("search  : " + search );
+		
 		}
 	}
 	 
 //---------------------------레시피 게시판------------------------
+//---------------------------메인화면 재료 검색---------------------
+	public void MainSearch(String mate_one,String mate_two,String mate_three, String cp, Model model) {
+		if (mate_one == null) {
+			mate_one = "";
+		}
+		if (mate_two == null) {
+			mate_two = "";
+		}
+		if (mate_three == null) {
+			mate_three = "";
+		}
+		
+		int currentPage = 1;
+		try{
+			currentPage = Integer.parseInt(cp);
+		}catch(Exception e){
+			currentPage = 1;
+		}
 
+		int pageBlock = 6; // 한 페이지에 보일 데이터의 수 
+		int end = pageBlock * currentPage; // 테이블에서 가져올 마지막 행번호
+		int begin = end - pageBlock + 1; // 테이블에서 가져올 시작 행번호
+		
+		ArrayList<RecipeBoardDTO> recipes = recipemapper.MainSearch(begin, end, mate_one, mate_two, mate_three);
+		for (RecipeBoardDTO recipe : recipes) {
+		    String categorys = recipe.getCategory();
+		    if ("kor".equals(categorys)) {
+		        recipe.setCategory("한식");
+		    } else if ("jap".equals(categorys)) {
+		        recipe.setCategory("일식");
+		    } else if ("chi".equals(categorys)) {
+		        recipe.setCategory("중식");
+		    }else if ("skeki".equals(categorys)) {
+		        recipe.setCategory("일식");
+		    }
+		}
+		int totalCount = recipemapper.countMainSearch(mate_one, mate_two, mate_three);
+		String url = "recipeBoard?&search="+mate_one+mate_two+mate_three+"&currentPage=";
+
+		String result = PageService.printPage(url, currentPage, totalCount, pageBlock);
+
+		model.addAttribute("recipes", recipes);
+		model.addAttribute("result", result);
+		model.addAttribute("currentPage", currentPage);
+
+
+	}
 //----------------------------레시피 내용------------------------
 	public RecipeBoardDTO recipeContent(String n) {
 		long re_no = 0;

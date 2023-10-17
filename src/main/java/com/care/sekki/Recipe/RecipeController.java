@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import retrofit2.http.POST;
 
 @Controller
 public class RecipeController {
@@ -34,11 +35,21 @@ public class RecipeController {
 	@Autowired private RecipeMapper recipemapper;
 	@RequestMapping("/recipeBoard")
     public String recipeBoard(@RequestParam(value="currentPage", required = false)String cp,
-			String search, Model model) {
-		recipeService.recipeBoard(cp, search ,model);
+			String search, Model model, HttpServletRequest request, String category) {
+		recipeService.recipeBoard(request, cp, search ,model, category);
+		
+		
 		
         return "recipe/recipeBoard";
     }
+	
+	@PostMapping("main_recipe_search")
+	public String main_recipe_search(@RequestParam(value="currentPage", required = false)String cp,
+			 Model model, String mate_one,String mate_two,String mate_three) {
+		recipeService.MainSearch(mate_one , mate_two, mate_three, cp, model);
+		return "recipe/recipeBoard";
+	}
+	
 	
 	
 	@GetMapping("/recipeBoardWrite")
@@ -53,6 +64,7 @@ public class RecipeController {
 	public String recipeProc(RecipeBoardDTO recipeDto,HttpServletRequest request, HttpServletResponse response) {
 		recipeService.recipeProc(recipeDto,request, response);
 		
+		
 		return "redirect:/recipeBoard";
 	}
 	@RequestMapping("recipeBoardContent")
@@ -63,6 +75,8 @@ public class RecipeController {
 		
 		if(reciDto == null) 
 			return "redirect:recipeBoard"; 
+		
+		
 		
 		model.addAttribute("recipeCon", reciDto);
 		

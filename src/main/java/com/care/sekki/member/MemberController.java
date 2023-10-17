@@ -55,6 +55,7 @@ public class MemberController {
 	public String footer() {
 		return "default/footer";
 	}
+	
 
   @RequestMapping("mypage")
 	public String mypage() {
