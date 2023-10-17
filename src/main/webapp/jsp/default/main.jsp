@@ -10,7 +10,7 @@
 			</h1>
 			<form action="main_recipe_search" method="post" class="search_form">
 				<input type="text" name="mate_one" placeholder="재료" class="main_input" /><br>
-				<input type="text" name="mate_tow" placeholder="재료" class="main_input" /><br>
+				<input type="text" name="mate_two" placeholder="재료" class="main_input" /><br>
 				<input type="text" name="mate_three" placeholder="재료" class="main_input" /><br>
 				<input type="submit" value="요리하러 가기" class="btn"/>
 			</form><br>
